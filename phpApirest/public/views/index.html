@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión Empresarial</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --danger: #e74c3c;
+            --dark: #34495e;
+            --light: #ecf0f1;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        header h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        nav {
+            background-color: var(--dark);
+            padding: 10px 0;
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+        }
+        
+        nav li {
+            margin: 0 15px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        nav a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .tab-content {
+            display: none;
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-top: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h2 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-success {
+            background-color: var(--secondary);
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: var(--light);
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .actions button {
+            padding: 8px 12px;
+            font-size: 0.9rem;
+        }
+        
+        .notification {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .notification.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .notification.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .json-viewer {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow: auto;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Sistema de Gestión Empresarial</h1>
+            <p>API REST para gestionar empleados, clientes y productos</p>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#" data-tab="home">Inicio</a></li>
+                <li><a href="#" data-tab="empleados">Empleados</a></li>
+                <li><a href="#" data-tab="clientes">Clientes</a></li>
+                <li><a href="#" data-tab="productos">Productos</a></li>
+                <li><a href="#" data-tab="api">Documentación API</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="container">
+        <div id="notification" class="notification"></div>
+        
+        <!-- Página de Inicio -->
+        <div id="home" class="tab-content active">
+            <h2>Bienvenido al Sistema de Gestión Empresarial</h2>
+            <p>Este sistema permite gestionar los recursos de una empresa mediante una API REST:</p>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>Empleados</h3>
+                    <p>Gestiona la información de los empleados de la empresa:</p>
+                    <ul>
+                        <li>Nombre completo</li>
+                        <li>Puesto de trabajo</li>
+                        <li>Salario</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Clientes</h3>
+                    <p>Administra los datos de los clientes:</p>
+                    <ul>
+                        <li>Nombre</li>
+                        <li>Correo electrónico</li>
+                        <li>Teléfono</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Productos</h3>
+                    <p>Controla el inventario de productos:</p>
+                    <ul>
+                        <li>Nombre del producto</li>
+                        <li>Precio</li>
+                        <li>Stock disponible</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gestión de Empleados -->
+        <div id="empleados" class="tab-content">
+            <h2>Gestión de Empleados</h2>
+            
+            <div class="grid">
+                <div>
+                    <h3>Agregar Nuevo Empleado</h3>
+                    <form id="empleadoForm">
+                        <div class="form-group">
+                            <label for="empleadoNombre">Nombre:</label>
+                            <input type="text" id="empleadoNombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="empleadoPuesto">Puesto:</label>
+                            <input type="text" id="empleadoPuesto" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="empleadoSalario">Salario:</label>
+                            <input type="number" id="empleadoSalario" step="0.01" required>
+                        </div>
+                        <button type="submit">Agregar Empleado</button>
+                    </form>
+                </div>
+                
+                <div>
+                    <h3>Lista de Empleados</h3>
+                    <div id="empleadosList"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gestión de Clientes -->
+        <div id="clientes" class="tab-content">
+            <h2>Gestión de Clientes</h2>
+            
+            <div class="grid">
+                <div>
+                    <h3>Agregar Nuevo Cliente</h3>
+                    <form id="clienteForm">
+                        <div class="form-group">
+                            <label for="clienteNombre">Nombre:</label>
+                            <input type="text" id="clienteNombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="clienteCorreo">Correo:</label>
+                            <input type="email" id="clienteCorreo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="clienteTelefono">Teléfono:</label>
+                            <input type="text" id="clienteTelefono" required>
+                        </div>
+                        <button type="submit">Agregar Cliente</button>
+                    </form>
+                </div>
+                
+                <div>
+                    <h3>Lista de Clientes</h3>
+                    <div id="clientesList"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gestión de Productos -->
+        <div id="productos" class="tab-content">
+            <h2>Gestión de Productos</h2>
+            
+            <div class="grid">
+                <div>
+                    <h3>Agregar Nuevo Producto</h3>
+                    <form id="productoForm">
+                        <div class="form-group">
+                            <label for="productoNombre">Nombre:</label>
+                            <input type="text" id="productoNombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productoPrecio">Precio:</label>
+                            <input type="number" id="productoPrecio" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productoStock">Stock:</label>
+                            <input type="number" id="productoStock" required>
+                        </div>
+                        <button type="submit">Agregar Producto</button>
+                    </form>
+                </div>
+                
+                <div>
+                    <h3>Lista de Productos</h3>
+                    <div id="productosList"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Documentación API -->
+        <div id="api" class="tab-content">
+            <h2>Documentación de la API</h2>
+            
+            <div class="card">
+                <h3>Endpoints de Empleados</h3>
+                <ul>
+                    <li><strong>GET /empleados</strong> - Obtener todos los empleados</li>
+                    <li><strong>GET /empleados/{id}</strong> - Obtener un empleado por ID</li>
+                    <li><strong>POST /empleados</strong> - Crear un nuevo empleado</li>
+                    <li><strong>POST /empleados/masivo</strong> - Crear múltiples empleados</li>
+                    <li><strong>PUT /empleados/{id}</strong> - Actualizar un empleado</li>
+                    <li><strong>DELETE /empleados/{id}</strong> - Eliminar un empleado</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h3>Endpoints de Clientes</h3>
+                <ul>
+                    <li><strong>GET /clientes</strong> - Obtener todos los clientes</li>
+                    <li><strong>GET /clientes/{id}</strong> - Obtener un cliente por ID</li>
+                    <li><strong>POST /clientes</strong> - Crear un nuevo cliente</li>
+                    <li><strong>PUT /clientes/{id}</strong> - Actualizar un cliente</li>
+                    <li><strong>DELETE /clientes/{id}</strong> - Eliminar un cliente</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h3>Endpoints de Productos</h3>
+                <ul>
+                    <li><strong>GET /productos</strong> - Obtener todos los productos</li>
+                    <li><strong>GET /productos/{id}</strong> - Obtener un producto por ID</li>
+                    <li><strong>POST /productos</strong> - Crear un nuevo producto</li>
+                    <li><strong>PUT /productos/{id}</strong> - Actualizar un producto</li>
+                    <li><strong>DELETE /productos/{id}</strong> - Eliminar un producto</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h3>Prueba la API</h3>
+                <div class="form-group">
+                    <label for="apiUrl">Endpoint:</label>
+                    <input type="text" id="apiUrl" value="/empleados">
+                </div>
+                <div class="form-group">
+                    <label for="apiMethod">Método:</label>
+                    <select id="apiMethod">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="apiBody">Cuerpo (JSON):</label>
+                    <textarea id="apiBody" rows="5"></textarea>
+                </div>
+                <button id="testApi">Ejecutar</button>
+                
+                <div class="json-viewer" id="apiResponse"></div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>Sistema de Gestión Empresarial &copy; 2023 - API REST con PHP MVC</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Navegación por pestañas
+        document.querySelectorAll('[data-tab]').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tabId = tab.getAttribute('data-tab');
+                
+                // Ocultar todas las pestañas
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Mostrar la pestaña seleccionada
+                document.getElementById(tabId).classList.add('active');
+                
+                // Si es una pestaña de listado, cargar los datos
+                if (tabId === 'empleados') {
+                    loadEmpleados();
+                } else if (tabId === 'clientes') {
+                    loadClientes();
+                } else if (tabId === 'productos') {
+                    loadProductos();
+                }
+            });
+        });
+        
+        // Función para mostrar notificaciones
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Funciones para empleados
+        async function loadEmpleados() {
+            try {
+                const response = await fetch('/empleados');
+                const empleados = await response.json();
+                
+                let html = '<table>';
+                html += '<tr><th>ID</th><th>Nombre</th><th>Puesto</th><th>Salario</th><th>Acciones</th></tr>';
+                
+                empleados.forEach(emp => {
+                    html += `<tr>
+                        <td>${emp.id}</td>
+                        <td>${emp.nombre}</td>
+                        <td>${emp.puesto}</td>
+                        <td>${emp.salario}</td>
+                        <td class="actions">
+                            <button onclick="editEmpleado(${emp.id})">Editar</button>
+                            <button class="btn-danger" onclick="deleteEmpleado(${emp.id})">Eliminar</button>
+                        </td>
+                    </tr>`;
+                });
+                
+                html += '</table>';
+                document.getElementById('empleadosList').innerHTML = html;
+            } catch (error) {
+                showNotification('Error al cargar empleados: ' + error.message, 'error');
+            }
+        }
+        
+        document.getElementById('empleadoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const empleado = {
+                nombre: document.getElementById('empleadoNombre').value,
+                puesto: document.getElementById('empleadoPuesto').value,
+                salario: parseFloat(document.getElementById('empleadoSalario').value)
+            };
+            
+            try {
+                const response = await fetch('/empleados', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(empleado)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showNotification('Empleado agregado correctamente');
+                    document.getElementById('empleadoForm').reset();
+                    loadEmpleados();
+                } else {
+                    showNotification('Error: ' + (result.error || result.mensaje), 'error');
+                }
+            } catch (error) {
+                showNotification('Error: ' + error.message, 'error');
+            }
+        });
+        
+        async function editEmpleado(id) {
+            try {
+                const response = await fetch(`/empleados/${id}`);
+                const empleado = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('empleadoNombre').value = empleado.nombre;
+                    document.getElementById('empleadoPuesto').value = empleado.puesto;
+                    document.getElementById('empleadoSalario').value = empleado.salario;
+                    
+                    // Cambiar el formulario para actualizar
+                    const form = document.getElementById('empleadoForm');
+                    form.onsubmit = async (e) => {
+                        e.preventDefault();
+                        
+                        const updatedEmpleado = {
+                            nombre: document.getElementById('empleadoNombre').value,
+                            puesto: document.getElementById('empleadoPuesto').value,
+                            salario: parseFloat(document.getElementById('empleadoSalario').value)
+                        };
+                        
+                        try {
+                            const updateResponse = await fetch(`/empleados/${id}`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(updatedEmpleado)
+                            });
+                            
+                            const result = await updateResponse.json();
+                            
+                            if (updateResponse.ok) {
+                                showNotification('Empleado actualizado correctamente');
+                                form.reset();
+                                form.onsubmit = null;
+                                loadEmpleados();
+                            } else {
+                                showNotification('Error: ' + (result.error || result.mensaje), 'error');
+                            }
+                        } catch (error) {
+                            showNotification('Error: ' + error.message, 'error');
+                        }
+                    };
+                    
+                    // Cambiar el texto del botón
+                    const button = form.querySelector('button');
+                    button.textContent = 'Actualizar Empleado';
+                    button.classList.add('btn-success');
+                    
+                    // Agregar botón de cancelar
+                    const cancelButton = document.createElement('button');
+                    cancelButton.textContent = 'Cancelar';
+                    cancelButton.type = 'button';
+                    cancelButton.classList.add('btn-danger');
+                    cancelButton.onclick = () => {
+                        form.reset();
+                        form.onsubmit = null;
+                        button.textContent = 'Agregar Empleado';
+                        button.classList.remove('btn-success');
+                        cancelButton.remove();
+                    };
+                    
+                    form.appendChild(cancelButton);
+                } else {
+                    showNotification('Error: ' + empleado.mensaje, 'error');
+                }
+            } catch (error) {
+                showNotification('Error: ' + error.message, 'error');
+            }
+        }
+        
+        async function deleteEmpleado(id) {
+            if (confirm('¿Estás seguro de que deseas eliminar este empleado?')) {
+                try {
+                    const response = await fetch(`/empleados/${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        showNotification('Empleado eliminado correctamente');
+                        loadEmpleados();
+                    } else {
+                        showNotification('Error: ' + (result.error || result.mensaje), 'error');
+                    }
+                } catch (error) {
+                    showNotification('Error: ' + error.message, 'error');
+                }
+            }
+        }
+        
+        // Funciones para clientes
+        async function loadClientes() {
+            try {
+                const response = await fetch('/clientes');
+                const clientes = await response.json();
+                
+                let html = '<table>';
+                html += '<tr><th>ID</th><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Acciones</th></tr>';
+                
+                clientes.forEach(cliente => {
+                    html += `<tr>
+                        <td>${cliente.id}</td>
+                        <td>${cliente.nombre}</td>
+                        <td>${cliente.correo}</td>
+                        <td>${cliente.telefono}</td>
+                        <td class="actions">
+                            <button onclick="editCliente(${cliente.id})">Editar</button>
+                            <button class="btn-danger" onclick="deleteCliente(${cliente.id})">Eliminar</button>
+                        </td>
+                    </tr>`;
+                });
+                
+                html += '</table>';
+                document.getElementById('clientesList').innerHTML = html;
+            } catch (error) {
+                showNotification('Error al cargar clientes: ' + error.message, 'error');
+            }
+        }
+        
+        document.getElementById('clienteForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const cliente = {
+                nombre: document.getElementById('clienteNombre').value,
+                correo: document.getElementById('clienteCorreo').value,
+                telefono: document.getElementById('clienteTelefono').value
+            };
+            
+            try {
+                const response = await fetch('/clientes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(cliente)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showNotification('Cliente agregado correctamente');
+                    document.getElementById('clienteForm').reset();
+                    loadClientes();
+                } else {
+                    showNotification('Error: ' + (result.error || result.mensaje), 'error');
+                }
+            } catch (error) {
+                showNotification('Error: ' + error.message, 'error');
+            }
+        });
+        
+        // Funciones para productos
+        async function loadProductos() {
+            try {
+                const response = await fetch('/productos');
+                const productos = await response.json();
+                
+                let html = '<table>';
+                html += '<tr><th>ID</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr>';
+                
+                productos.forEach(producto => {
+                    html += `<tr>
+                        <td>${producto.id}</td>
+                        <td>${producto.nombre}</td>
+                        <td>${producto.precio}</td>
+                        <td>${producto.stock}</td>
+                        <td class="actions">
+                            <button onclick="editProducto(${producto.id})">Editar</button>
+                            <button class="btn-danger" onclick="deleteProducto(${producto.id})">Eliminar</button>
+                        </td>
+                    </tr>`;
+                });
+                
+                html += '</table>';
+                document.getElementById('productosList').innerHTML = html;
+            } catch (error) {
+                showNotification('Error al cargar productos: ' + error.message, 'error');
+            }
+        }
+        
+        document.getElementById('productoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const producto = {
+                nombre: document.getElementById('productoNombre').value,
+                precio: parseFloat(document.getElementById('productoPrecio').value),
+                stock: parseInt(document.getElementById('productoStock').value)
+            };
+            
+            try {
+                const response = await fetch('/productos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(producto)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showNotification('Producto agregado correctamente');
+                    document.getElementById('productoForm').reset();
+                    loadProductos();
+                } else {
+                    showNotification('Error: ' + (result.error || result.mensaje), 'error');
+                }
+            } catch (error) {
+                showNotification('Error: ' + error.message, 'error');
+            }
+        });
+        
+        // Prueba de API
+        document.getElementById('testApi').addEventListener('click', async () => {
+            const url = document.getElementById('apiUrl').value;
+            const method = document.getElementById('apiMethod').value;
+            const body = document.getElementById('apiBody').value;
+            
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                
+                if (method !== 'GET' && method !== 'DELETE' && body) {
+                    options.body = body;
+                }
+                
+                const response = await fetch(url, options);
+                const result = await response.json();
+                
+                document.getElementById('apiResponse').textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                document.getElementById('apiResponse').textContent = 'Error: ' + error.message;
+            }
+        });
+        
+        // Cargar empleados al inicio
+        loadEmpleados();
+    </script>
+</body>
+</html>
